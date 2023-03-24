@@ -17,7 +17,8 @@ public class BarMenu extends JMenuBar {
 
 	public JMenuItem saveFile;
 	public JMenuItem loadFile;
-	public JMenuItem selectSnE;
+	public JMenuItem selectStart;
+	public JMenuItem selectEnd;
 	public JMenuItem launchResolution;
 
 	// Constructeurs ***************************************************************
@@ -30,13 +31,16 @@ public class BarMenu extends JMenuBar {
 		// création des sous-menus
 		saveFile = new JMenuItem("Enregistrer");
 		loadFile = new JMenuItem("Charger");
-		selectSnE = new JMenuItem("Selectionner le depart et l'arrivee");
+		selectStart = new JMenuItem("Selectionner le depart");
+		selectEnd = new JMenuItem("Selectionner l'arrivée");
 		launchResolution = new JMenuItem("Lancer la resolution");
 
 		// on ajoute les sous-menus aux différents menus
 		file.add(saveFile);
 		file.add(loadFile);
-		resolution.add(selectSnE);
+		resolution.add(selectStart);
+		resolution.add(selectEnd);
+		resolution.addSeparator();
 		resolution.add(launchResolution);
 
 		// on ajoute des raccourcis pour les menus
