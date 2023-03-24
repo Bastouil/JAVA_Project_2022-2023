@@ -19,8 +19,8 @@ public class EditInterface extends JDialog {
 	protected final static int NOT_A_INT = -1;
 	protected final static String FILE_NAME_NOT_VALIDE = "";
 	// dimensions de la fenêtre de dialogue
-	private final static int WIGHT_FRAME = 250;
-	private final static int HEIGHT_FRAME = 100;
+	private final static int WIGHT_FRAME = 300;
+	private final static int HEIGHT_FRAME = 120;
 	// label qui va contenir le titre
 	protected JLabel title;
 	// zone de texte où va écrire l'utilisateur
@@ -96,6 +96,7 @@ public class EditInterface extends JDialog {
 	// Methodes ********************************************************************
 	/*
 	 * Ajoute des listeners dédiés à l'écriture dans un fichier texte
+	 * TODO à refaire de manière plus propre
 	 */
 	public void AddListenerFileWrite(MapInterface map) {
 		textField.addKeyListener(new KeyListener() {
@@ -119,6 +120,7 @@ public class EditInterface extends JDialog {
 	}
 	/*
 	 * Ajoute des listeners dédiés à la lecture dans un fichier texte
+	 * TODO à refaire de manière plus propre
 	 */
 	public void AddListenerFileRead(MapInterface map) {
 		textField.addKeyListener(new KeyListener() {
@@ -169,7 +171,7 @@ public class EditInterface extends JDialog {
 		if (newInt != NOT_A_INT) {
 			landSource.setText("" + newInt);
 			landSource.cInt = newInt;
-			landSource.UpdateLandColor();
+			landSource.UpdateAppearance();
 			dispose();
 		}
 	}
@@ -226,6 +228,7 @@ public class EditInterface extends JDialog {
 			// erreur dans l'ouverture du fichier
 			System.out.println("Echec de l'ouverture du fichier : " + fileName);
 		}
+		map.DefaultMessage();
 		dispose();
 	}
 	/*
@@ -277,6 +280,7 @@ public class EditInterface extends JDialog {
 		} catch (IOException e) {
 			System.out.println("Echec de l'ouverture du fichier : " + fileName);
 		}
+		map.DefaultMessage();
 		dispose();
 	}
 }
