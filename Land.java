@@ -14,20 +14,62 @@ public class Land extends JButton {
 	// attribus servants la coloration des boutons
 	static final float maxHeight = 30;
 	static final float interSize = maxHeight / 7;
-	static int R, G, B;
+	// comosante de la couleur du fond de la case
+	int R, G, B;
+	// boolean permettant de savoir la nature de la case
+	boolean isStart;
+	boolean isEnd;
+	// carte dans lequel se trouve le bouton
+	MapInterface map;
 	// position du bouton dans la carte
 	private int Xcoord, Ycoord;
 	// contient l'entier de la case
 	public int cInt;
+	// les différents listeners d'une case
+	final static MouseAdapter editLandListener = new MouseAdapter() {
+		public void mousePressed(MouseEvent evt) {
+			// recupere le bouton enfonce
+			Land landSource = (Land) evt.getSource();
+			System.out.println("Case : (" + landSource.getName() + ") en cours de modification");
+			EditInterface editer = new EditInterface(landSource);
+		}
+	};
+	final static MouseAdapter startLandListener = new MouseAdapter() {
+		public void mousePressed(MouseEvent evt) {
+			// recupere le bouton enfonce
+			Land landSource = (Land) evt.getSource();
+			landSource.nowStart();
+			landSource.UpdateText();
+			System.out.println("Case : (" + landSource.getName() + ") define comme depart");
+			landSource.map.DefineLandsListener(MapInterface.EDIT_ACTION);
+			landSource.map.DefaultMessage();
+		}
+	};
+	final static MouseAdapter endLandListener = new MouseAdapter() {
+		public void mousePressed(MouseEvent evt) {
+			// recupere le bouton enfonce
+			Land landSource = (Land) evt.getSource();
+			landSource.nowEnd();
+			landSource.UpdateText();
+			System.out.println("Case : (" + landSource.getName() + ") define comme arrivee");
+			landSource.map.DefineLandsListener(MapInterface.EDIT_ACTION);
+			landSource.map.DefaultMessage();
+		}
+	};
 
 	// Constructeurs ***************************************************************
 	/*
 	 * Les paramètres du constructeur sont les coordonnées du bouton au sein de la
 	 * carte
 	 */
-	Land(int x, int y) {
+	Land(MapInterface map, int x, int y) {
 		super();
-		// initialisation de la posistion du bouton dans la carte
+		// initialisation de la nature de la case
+		isStart = false;
+		isEnd = false;
+		// récupération de la carte
+		this.map = map;
+		// récupération de la posistion du bouton dans la carte
 		Xcoord = x;
 		Ycoord = y;
 		// On initialise l'entier de la case à 0
@@ -37,20 +79,30 @@ public class Land extends JButton {
 		// le nom du bouton est sa position dans la carte
 		this.setName(x + ";" + y);
 		// on met à jour la couleur du bouton (elle dépend de la valeur qu'il contient)
-		UpdateLandColor();
-		// on ajoute un listener sur le bouton
-		this.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mousePressed(java.awt.event.MouseEvent evt) {
-				// recupere le bouton enfonce
-				Land landSource = (Land) evt.getSource();
-				// recupere l'info
-				System.out.println("(" + landSource.getName() + ")");
-				EditInterface editer = new EditInterface(landSource);
-			}
-		});
+		UpdateColor();
+
 	}
 
 	// Methodes ********************************************************************
+	/*
+	 * Définit la case en tant que case de départ
+	 */
+	public void nowStart() {
+		map.startLand.isStart = false;
+		map.startLand.UpdateText();
+		map.startLand = this;
+		isStart = true;
+		UpdateText();
+	}
+	/*
+	 * Définit la case en tant que case d'arrivée
+	 */
+	public void nowEnd() {
+		map.endLand.isEnd = false;
+		map.endLand.UpdateText();
+		map.endLand = this;
+		isEnd = true;
+	}
 	/*
 	 * Renvoie une couleur en fonction d'un entier
 	 */
@@ -84,8 +136,19 @@ public class Land extends JButton {
 			G = Math.round((7 / maxHeight) * 255 * x - (6 * 255));
 			B = 255;
 		}
-		Color lColor = new Color(R, G, B);
-		return lColor;
+		return new Color(R, G, B);
+	}
+
+	/*
+	 * Renvoie la couleur opposée à celle du fond. Il faut que les composantes de
+	 * couleurs soient à jour pour que la couleur renvoyée soit bonne.
+	 */
+	private Color getOpositeColor() {
+		R = 255 - R;
+		G = 255 - G;
+		B = 255 - B;
+
+		return new Color(R, G, B);
 	}
 
 	/*
@@ -98,13 +161,37 @@ public class Land extends JButton {
 	public int getYcoord() {
 		return Ycoord;
 	}
-
 	/*
-	 * Met à jour la couleur du bouton à partir de l'entier
+	 * Met à jour la couleur du bouton (avec la couleur de l'écriture)
 	 */
-	public void UpdateLandColor() {
-		setText("" + cInt);
+	public void UpdateColor() {
+		// ordre très important lors de l'utilisation de ces deux fonctions
 		setBackground(getColor(cInt));
+		setForeground(getOpositeColor());
+	}
+	/*
+	 * Met à jour le text affiché par le bouton
+	 */
+	public void UpdateText() {
+		if (isStart && isEnd) {
+			setText("D " + cInt + " A");
+		}
+		else if (isStart) {
+			setText("D " + cInt);
+		}
+		else if (isEnd){
+			setText(cInt + " A");
+		}
+		else {
+			setText("" + cInt);
+		}
+	}
+	/*
+	 * Met à jour l'apparance du bouton à partir de sa nature et de l'entier (cInt)
+	 */
+	public void UpdateAppearance() {
+		UpdateText();
+		UpdateColor();
 	}
 
 }
