@@ -1,12 +1,6 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 import javax.swing.*;
 
@@ -16,77 +10,144 @@ import javax.swing.*;
 public class EditInterface extends JDialog {
 	// Attributs *******************************************************************
 	// code erreure
-	protected final static int NOT_A_INT = -1;
-	protected final static String FILE_NAME_NOT_VALIDE = "";
+	private final static int NOT_A_INT = -1;
+	private final static String FILE_NAME_NOT_VALIDE = "";
 	// dimensions de la fenêtre de dialogue
 	private final static int WIGHT_FRAME = 300;
 	private final static int HEIGHT_FRAME = 120;
 	// label qui va contenir le titre
-	protected JLabel title;
+	private JLabel message;
 	// zone de texte où va écrire l'utilisateur
-	protected JTextField textField;
+	private JTextField textField;
 	// bouton de confirmation
-	protected JButton okButton;
+	private JButton okButton;
 	// nom du fichier avec lequel intéragire
-	protected String fileName;
+	private String fileName;
+	// source du déclanchement du listener
+	Land landSource;
+	MapInterface mapSource;
+	// instanciation des différents listeners
+	private final KeyListener keyListenerClose = new KeyListener() {
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				MyDispose();
+			}
+		}
+
+		public void keyReleased(KeyEvent e) {
+		}
+
+		public void keyTyped(KeyEvent e) {
+		}
+	};
+	private final MouseAdapter mouseListenerClose = new MouseAdapter() {
+		public void mousePressed(MouseEvent evt) {
+			MyDispose();
+		}
+	};
+	private final KeyListener keyListenerEditLand = new KeyListener() {
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				ChangeLandNumber();
+			}
+		}
+
+		public void keyReleased(KeyEvent e) {
+		}
+
+		public void keyTyped(KeyEvent e) {
+		}
+	};
+	private final KeyListener keyListenerReadFile = new KeyListener() {
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				ReadMapInTextFile();
+			}
+		}
+
+		public void keyReleased(KeyEvent e) {
+		}
+
+		public void keyTyped(KeyEvent e) {
+		}
+	};
+	private final KeyListener keyListenerWriteFile = new KeyListener() {
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				WriteMapInTextFile();
+			}
+		}
+
+		public void keyReleased(KeyEvent e) {
+		}
+
+		public void keyTyped(KeyEvent e) {
+		}
+	};
+	private final MouseAdapter mouseListenerEditLand = new MouseAdapter() {
+		public void mousePressed(MouseEvent evt) {
+			ChangeLandNumber();
+		}
+	};
+	private final MouseAdapter mouseListenerReadFile = new MouseAdapter() {
+		public void mousePressed(MouseEvent evt) {
+			ReadMapInTextFile();
+		}
+	};
+	private final MouseAdapter mouseListenerWriteFile = new MouseAdapter() {
+		public void mousePressed(MouseEvent evt) {
+			WriteMapInTextFile();
+		}
+	};
 
 	// Constructeurs ***************************************************************
 
-	EditInterface(Land landSource) {
+	EditInterface(Land land) {
 		// paramètrage de l'interface
 		super();
+		setTitle("Pressez la touche ESC pour sortir");
+		// récupération de la source
+		landSource = land;
+		mapSource = land.map;
 		setSize(WIGHT_FRAME, HEIGHT_FRAME);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// instanciation du titre
-		title = new JLabel("Entrez un entier entre 0 et 30 :");
+		message = new JLabel("Entrez un entier entre 0 et 30 :");
 		// instanciation de la zone de texte
 		textField = new JTextField();
-		textField.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					ChangeLandNumber(landSource);
-				}
-			}
-
-			public void keyReleased(KeyEvent e) {
-			}
-
-			public void keyTyped(KeyEvent e) {
-			}
-		});
-		// instanciation et paramètrage du bouton
+		textField.addKeyListener(keyListenerEditLand);
+		textField.addKeyListener(keyListenerClose);
+		// instanciation et paramètrage du bouton OK
 		okButton = new JButton();
 		okButton.setText("OK");
-		okButton.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent evt) {
-				ChangeLandNumber(landSource);
-			}
-		});
+		okButton.addMouseListener(mouseListenerEditLand);		
 		// ajout du titre, de la zone de texte et du bouton à l'interface
-		getContentPane().add(title, BorderLayout.NORTH);
+		getContentPane().add(message, BorderLayout.NORTH);
 		getContentPane().add(textField, BorderLayout.CENTER);
 		getContentPane().add(okButton, BorderLayout.SOUTH);
 
 		setVisible(true);
-
 	}
 
 	EditInterface(MapInterface map) {
 		// paramètrage de l'interface
 		super();
+		setTitle("Pressez la touche ESC pour sortir");
+		// récupération de la source
+		mapSource = map;
+		landSource = map.landAt(0 , 0);
 		setSize(WIGHT_FRAME, HEIGHT_FRAME);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		// instanciation du titre
-		title = new JLabel("Entrez un nom de fichier valide (sans le \".txt\") :");
+		message = new JLabel("Entrez un nom de fichier valide (sans le \".txt\") :");
 		// instanciation de la zone de texte
 		textField = new JTextField();
-
+		textField.addKeyListener(keyListenerClose);
 		// instanciation et paramètrage du bouton
 		okButton = new JButton();
 		okButton.setText("OK");
-
 		// ajout du titre, de la zone de texte et du bouton à l'interface
-		getContentPane().add(title, BorderLayout.NORTH);
+		getContentPane().add(message, BorderLayout.NORTH);
 		getContentPane().add(textField, BorderLayout.CENTER);
 		getContentPane().add(okButton, BorderLayout.SOUTH);
 
@@ -95,52 +156,25 @@ public class EditInterface extends JDialog {
 
 	// Methodes ********************************************************************
 	/*
-	 * Ajoute des listeners dédiés à l'écriture dans un fichier texte
-	 * TODO à refaire de manière plus propre
+	 * Fermer proprement la fenêtre de dialogue
 	 */
-	public void AddListenerFileWrite(MapInterface map) {
-		textField.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					WriteMapInTextFile(map);
-				}
-			}
-
-			public void keyReleased(KeyEvent e) {
-			}
-
-			public void keyTyped(KeyEvent e) {
-			}
-		});
-		okButton.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent evt) {
-				WriteMapInTextFile(map);
-			}
-		});
+	private void MyDispose() {
+		mapSource.DefaultMessage();
+		dispose();
 	}
 	/*
-	 * Ajoute des listeners dédiés à la lecture dans un fichier texte
-	 * TODO à refaire de manière plus propre
+	 * Ajoute les deux listeners nécessaire à l'écriture dans un fichier texte
 	 */
-	public void AddListenerFileRead(MapInterface map) {
-		textField.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					ReadMapInTextFile(map);
-				}
-			}
-
-			public void keyReleased(KeyEvent e) {
-			}
-
-			public void keyTyped(KeyEvent e) {
-			}
-		});
-		okButton.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent evt) {
-				ReadMapInTextFile(map);
-			}
-		});
+	public void AddListenerWriteFile() {
+		addKeyListener(keyListenerWriteFile);
+		okButton.addMouseListener(mouseListenerWriteFile);	
+	}
+	/*
+	 * Ajoute les deux listeners nécessaire à la lecture d'un fichier texte
+	 */
+	public void AddListenerReadFile() {
+		addKeyListener(keyListenerReadFile);
+		okButton.addMouseListener(mouseListenerReadFile);	
 	}
 	/*
 	 * Récupère l'entier contenu dans la zone de texte
@@ -166,13 +200,13 @@ public class EditInterface extends JDialog {
 	 * Execute l'action du bouton OK et de la touche entrer lorsque l'on veut une
 	 * hauteur valide pour un "Land"
 	 */
-	public void ChangeLandNumber(Land landSource) {
+	private void ChangeLandNumber() {
 		int newInt = getInt();
 		if (newInt != NOT_A_INT) {
 			landSource.setText("" + newInt);
-			landSource.cInt = newInt;
+			landSource.height = newInt;
 			landSource.UpdateAppearance();
-			dispose();
+			MyDispose();
 		}
 	}
 	/*
@@ -203,7 +237,7 @@ public class EditInterface extends JDialog {
 	/*
 	 * Ecrit le contenut de la carte dans un fichier texte
 	 */
-	private void WriteMapInTextFile(MapInterface map) {
+	private void WriteMapInTextFile() {
 		String str = GetValideFileName(textField.getText());
 		if (str == FILE_NAME_NOT_VALIDE) {
 			return;
@@ -213,12 +247,12 @@ public class EditInterface extends JDialog {
 		try {
 			FileWriter myFile = new FileWriter(fileName);
 
-			myFile.write(map.nbRows + "\n");
-			myFile.write(map.nbCols + "\n");
+			myFile.write(mapSource.nbRows + "\n");
+			myFile.write(mapSource.nbCols + "\n");
 
-			for (int i = 0; i < map.nbCols; i++) {
-				for (int j = 0; j < map.nbRows; j++) {
-					myFile.write(map.land[i][j].cInt + "\n");
+			for (int i = 0; i < mapSource.nbCols; i++) {
+				for (int j = 0; j < mapSource.nbRows; j++) {
+					myFile.write(mapSource.landAt(i, j).height + "\n");
 				}
 			}
 			myFile.write("$");
@@ -228,13 +262,12 @@ public class EditInterface extends JDialog {
 			// erreur dans l'ouverture du fichier
 			System.out.println("Echec de l'ouverture du fichier : " + fileName);
 		}
-		map.DefaultMessage();
-		dispose();
+		MyDispose();
 	}
 	/*
 	 * Lit le contenut d'un fichier texte pour le mettre dans une carte
 	 */
-	private void ReadMapInTextFile(MapInterface map) {
+	private void ReadMapInTextFile() {
 		String str = GetValideFileName(textField.getText());
 		if (str == FILE_NAME_NOT_VALIDE) {
 			return;
@@ -263,24 +296,24 @@ public class EditInterface extends JDialog {
 			for (i = 0; i < nbRows; i++) {
 				for (j = 0; j < nbCols; j++) {
 					try {
-						newMap.land[i][j].cInt = Integer.parseInt(myFile.readLine());
+						newMap.landAt(i, j).height = Integer.parseInt(myFile.readLine());
+						newMap.landAt(i, j).UpdateAppearance();
 					} catch (NumberFormatException e) {
 						System.out.println("Echec de lecture de l'entier a la ligne " + (i * nbCols + j + 3)
 						+ " du fichier : " + fileName);
-						newMap.land[i][j].cInt = 0;
+						newMap.landAt(i, j).height = 0;
 					}
 				}
 			}
 			myFile.close();
-			map.dispose();
-			map = newMap;
-			map.UpdateMapColor();
+			mapSource.dispose();
+			mapSource = newMap;
+			//mapSource.UpdateMapColor();
 		} catch (FileNotFoundException e) {
 			System.out.println("Fichier introuvable : " + fileName);
 		} catch (IOException e) {
 			System.out.println("Echec de l'ouverture du fichier : " + fileName);
 		}
-		map.DefaultMessage();
-		dispose();
+		MyDispose();
 	}
 }
