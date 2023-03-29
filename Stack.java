@@ -35,7 +35,7 @@ public class Stack<T> {
 		actualSituation = (Situation) table.elementAt(i);
 		while (actualSituation != situationToStop){
 			newStack.Push(actualSituation.DuplicateSituation());
-			nbMove++;
+			newStack.nbMove++;
 			if (i >= 1)
 				costPath += ((Situation)table.elementAt(i-1)).lastLand.CostTo(actualSituation.lastLand);
 			i++;

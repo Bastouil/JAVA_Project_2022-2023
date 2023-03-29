@@ -7,26 +7,27 @@ import javax.swing.*;
 /*
  * Interface de modification
  */
-public class EditInterface extends JDialog {
+public class EditLandInterface extends JDialog {
 	// Attributs *******************************************************************
 	// code erreure
 	private final static int NOT_A_INT = -1;
 	private final static String FILE_NAME_NOT_VALIDE = "";
-	// dimensions de la fenÃªtre de dialogue
+	// dimensions de la fenêtre de dialogue
 	private final static int WIGHT_FRAME = 300;
 	private final static int HEIGHT_FRAME = 120;
 	// label qui va contenir le titre
 	private JLabel message;
-	// zone de texte oÃ¹ va Ã©crire l'utilisateur
+	private JLabel text;
+	// zone de texte où va écrire l'utilisateur
 	private JTextField textField;
 	// bouton de confirmation
 	private JButton okButton;
-	// nom du fichier avec lequel intÃ©ragire
+	// nom du fichier avec lequel intéragire
 	private String fileName;
-	// source du dÃ©clanchement du listener
+	// source du déclanchement du listener
 	Land landSource;
 	MapInterface mapSource;
-	// instanciation des diffÃ©rents listeners
+	// instanciation des différents listeners
 	private final KeyListener keyListenerClose = new KeyListener() {
 		public void keyPressed(KeyEvent e) {
 			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -102,11 +103,11 @@ public class EditInterface extends JDialog {
 
 	// Constructeurs ***************************************************************
 
-	EditInterface(Land land) {
-		// paramÃ¨trage de l'interface
+	EditLandInterface(Land land) {
+		// paramètrage de l'interface
 		super();
 		setTitle("Pressez la touche ESC pour sortir");
-		// rÃ©cupÃ©ration de la source
+		// récupération de la source
 		landSource = land;
 		mapSource = land.map;
 		setSize(WIGHT_FRAME, HEIGHT_FRAME);
@@ -117,11 +118,11 @@ public class EditInterface extends JDialog {
 		textField = new JTextField();
 		textField.addKeyListener(keyListenerEditLand);
 		textField.addKeyListener(keyListenerClose);
-		// instanciation et paramÃ¨trage du bouton OK
+		// instanciation et paramètrage du bouton OK
 		okButton = new JButton();
 		okButton.setText("OK");
 		okButton.addMouseListener(mouseListenerEditLand);		
-		// ajout du titre, de la zone de texte et du bouton Ã  l'interface
+		// ajout du titre, de la zone de texte et du bouton à l'interface
 		getContentPane().add(message, BorderLayout.NORTH);
 		getContentPane().add(textField, BorderLayout.CENTER);
 		getContentPane().add(okButton, BorderLayout.SOUTH);
@@ -129,11 +130,11 @@ public class EditInterface extends JDialog {
 		setVisible(true);
 	}
 
-	EditInterface(MapInterface map) {
-		// paramÃ¨trage de l'interface
+	EditLandInterface(MapInterface map) {
+		// paramètrage de l'interface
 		super();
 		setTitle("Pressez la touche ESC pour sortir");
-		// rÃ©cupÃ©ration de la source
+		// récupération de la source
 		mapSource = map;
 		landSource = map.landAt(0 , 0);
 		setSize(WIGHT_FRAME, HEIGHT_FRAME);
@@ -143,12 +144,40 @@ public class EditInterface extends JDialog {
 		// instanciation de la zone de texte
 		textField = new JTextField();
 		textField.addKeyListener(keyListenerClose);
-		// instanciation et paramÃ¨trage du bouton
+		// instanciation et paramètrage du bouton
 		okButton = new JButton();
 		okButton.setText("OK");
-		// ajout du titre, de la zone de texte et du bouton Ã  l'interface
+		// ajout du titre, de la zone de texte et du bouton à l'interface
 		getContentPane().add(message, BorderLayout.NORTH);
 		getContentPane().add(textField, BorderLayout.CENTER);
+		getContentPane().add(okButton, BorderLayout.SOUTH);
+
+		setVisible(true);
+	}
+	
+	EditLandInterface(MapInterface map, String titreAbout) {
+		// paramètrage de l'interface de la fenetre help
+		super();
+		setTitle("Appuyer sur OK pour sortir");
+		// récupération de la source
+		mapSource = map;
+		landSource = map.landAt(0 , 0);
+		setSize(WIGHT_FRAME+20, HEIGHT_FRAME+70);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		// instanciation du titre
+		message = new JLabel(titreAbout);
+		// instanciation en html de la zone de texte
+		text = new JLabel("<html>Version: (0.0.1)<br><br>Date: 2023<br>(c) Copyright App contributors and others.<br>All rights reserved.<br><br>By Garçon Bastian & Jaouanne Lilian</html>");
+		okButton = new JButton();
+		okButton.setText("OK");
+		okButton.addActionListener(new ActionListener() {
+	         public void actionPerformed(ActionEvent e) {
+	        	 MyDispose(); // Ferme la fenêtre actuelle
+	         }
+	      });
+		// ajout du titre, de la zone de texte et du bouton à l'interface
+		getContentPane().add(message, BorderLayout.NORTH);
+		getContentPane().add(text, BorderLayout.CENTER);
 		getContentPane().add(okButton, BorderLayout.SOUTH);
 
 		setVisible(true);
@@ -156,28 +185,28 @@ public class EditInterface extends JDialog {
 
 	// Methodes ********************************************************************
 	/*
-	 * Fermer proprement la fenÃªtre de dialogue
+	 * Fermer proprement la fenêtre de dialogue
 	 */
 	private void MyDispose() {
 		mapSource.DefaultMessage();
 		dispose();
 	}
 	/*
-	 * Ajoute les deux listeners nÃ©cessaire Ã  l'Ã©criture dans un fichier texte
+	 * Ajoute les deux listeners nécessaire à l'écriture dans un fichier texte
 	 */
 	public void AddListenerWriteFile() {
 		addKeyListener(keyListenerWriteFile);
 		okButton.addMouseListener(mouseListenerWriteFile);	
 	}
 	/*
-	 * Ajoute les deux listeners nÃ©cessaire Ã  la lecture d'un fichier texte
+	 * Ajoute les deux listeners nécessaire à la lecture d'un fichier texte
 	 */
 	public void AddListenerReadFile() {
 		addKeyListener(keyListenerReadFile);
 		okButton.addMouseListener(mouseListenerReadFile);	
 	}
 	/*
-	 * RÃ©cupÃ¨re l'entier contenu dans la zone de texte
+	 * Récupère l'entier contenu dans la zone de texte
 	 */
 	private int getInt() {
 		// contenu brut de la zone de texte
@@ -210,8 +239,8 @@ public class EditInterface extends JDialog {
 		}
 	}
 	/*
-	 * RÃ©cupÃ¨re la chaÃ®ne de caractÃ¨re contenu dans la zone de texte et vÃ©rifie si
-	 * c'est un nom de fichier valide (sans le ".txt" Ã  la fin)
+	 * Récupère la chaîne de caractère contenu dans la zone de texte et vérifie si
+	 * c'est un nom de fichier valide (sans le ".txt" à la fin)
 	 */
 	private String GetValideFileName(String textContent) {
 		char charToAnalyse;
@@ -226,7 +255,7 @@ public class EditInterface extends JDialog {
 		return textContent;
 	}
 	/*
-	 * Dit si le caractÃ¨re est valide ou non pour un nom de fichier
+	 * Dit si le caractère est valide ou non pour un nom de fichier
 	 */
 	private boolean ValideFileChar(char c) {
 		if (c == '-' || c == '_' || ('0' <= c && c <= '9') || ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z')) {
@@ -281,7 +310,7 @@ public class EditInterface extends JDialog {
 			BufferedReader myFile = new BufferedReader(new FileReader(fileName));
 			int nbRows;
 			int nbCols;
-			// on rÃ©cupÃ¨re la taille de la carte
+			// on récupère la taille de la carte
 			try {
 				nbRows = Integer.parseInt(myFile.readLine());
 				nbCols = Integer.parseInt(myFile.readLine());
@@ -290,9 +319,9 @@ public class EditInterface extends JDialog {
 				nbRows = 1;
 				nbCols = 1;
 			}
-			// on crÃ©e une nouvelle carte qui servira Ã  charger les valeurs
+			// on crée une nouvelle carte qui servira à charger les valeurs
 			MapInterface newMap = new MapInterface(nbRows, nbCols);
-			// on rentre les donnÃ©es du fichier dans la carte
+			// on rentre les données du fichier dans la carte
 			for (i = 0; i < nbRows; i++) {
 				for (j = 0; j < nbCols; j++) {
 					try {

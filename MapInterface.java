@@ -12,11 +12,11 @@ import javax.swing.*;
  */
 public class MapInterface extends JFrame {
 	// Attributs *******************************************************************
-	// codes utilisÃ©es pour saisir les diffÃ©rents listeners
+	// codes utilisées pour saisir les différents listeners
 	public static final int EDIT_ACTION = 1;
 	public static final int START_ACTION = 2;
 	public static final int END_ACTION = 3;
-	// taille des cÃ´tÃ©es de la fenÃªtre
+	// taille des côtées de la fenêtre
 	private static final int SIZE_FRAME = 600;
 	// taille de la carte
 	protected int nbRows;
@@ -25,20 +25,20 @@ public class MapInterface extends JFrame {
 	protected BarMenu barMenu;
 	// tableau de case
 	protected Land[][] land;
-	// case de dÃ©part
+	// case de départ
 	protected Land startLand;
-	// case d'arrivÃ©e
+	// case d'arrivée
 	protected Land endLand;
 	// grille dans laquelle on vient mettre les cases
 	protected JPanel frame;
-	// message qui s'affiche Ã  l'utilisateur
+	// message qui s'affiche à l'utilisateur
 	protected JLabel message;
-	// pile des meilleurs choix pour le chemin de moindre coÃ»t
+	// pile des meilleurs choix pour le chemin de moindre coût
 	protected Stack<Situation> bestPath;
 
 	// Constructeurs ***************************************************************
 	MapInterface(int nbRows, int nbCols) {
-		// paramÃ¨trage de l'interface
+		// paramètrage de l'interface
 		super("Interface principale");
 		setSize(SIZE_FRAME, SIZE_FRAME);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -78,7 +78,7 @@ public class MapInterface extends JFrame {
 				landAt(i, j).addMouseListener(Land.editLandListener);
 			}
 		}
-		// dÃ©part et arrivÃ©e initialisÃ©s en dehors de la carte
+		// départ et arrivée initialisés en dehors de la carte
 		startLand = landAt(-2, -2);
 		endLand = landAt(-2, -2);
 		// instanciation de la barre de menu
@@ -89,7 +89,7 @@ public class MapInterface extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Choix \"Enregistrer\"");
 				message.setText("Enregistrement d'un fichier");
-				EditInterface editer = new EditInterface(GetMapInterface());
+				EditLandInterface editer = new EditLandInterface(GetMapInterface());
 				editer.AddListenerWriteFile();
 			}
 		});
@@ -97,14 +97,14 @@ public class MapInterface extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Choix \"Charger un fichier\"");
 				message.setText("Chargement d'un fichier");
-				EditInterface editer = new EditInterface(GetMapInterface());
+				EditLandInterface editer = new EditLandInterface(GetMapInterface());
 				editer.AddListenerReadFile();
 			}
 		});
 		barMenu.selectStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Choix \"Selectionner le depart\"");
-				message.setText("Veuillez selectionner la case de dÃ©part");
+				message.setText("Veuillez selectionner la case de départ");
 				// change les listeners ce trouvant sur les boutons
 				DefineLandsListener(START_ACTION);
 			}
@@ -112,7 +112,7 @@ public class MapInterface extends JFrame {
 		barMenu.selectEnd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Choix \"Selectionner l'arrivee\"");
-				message.setText("Veuillez selectionner la case d'arrivÃ©e");
+				message.setText("Veuillez selectionner la case d'arrivée");
 				// change les listeners ce trouvant sur les boutons
 				DefineLandsListener(END_ACTION);
 			}
@@ -121,15 +121,15 @@ public class MapInterface extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Choix \"Lancer la resolution\"");
 				if (!startLand.inMap || !endLand.inMap) {
-					System.out.println("Lancement de rÃ©solution refusÃ©e");
+					System.out.println("Lancement de résolution refusée");
 					MessageInterface m = new MessageInterface(
-							"Veuillez sÃ©lectionner un case de dÃ©part et d'arrivÃ©e avant de lancer la rÃ©solution");
+							"Veuillez sélectionner un case de départ et d'arrivée avant de lancer la résolution");
 					return;
 				}
 				setAllLandFree();
-				message.setText("RÃ©solution en cours ...");
+				message.setText("Résolution en cours ...");
 				LaunchResolution();
-				MessageInterface m = new MessageInterface("RÃ©solution terminÃ©e !");
+				MessageInterface m = new MessageInterface("Résolution terminée !");
 				DefaultMessage();
 				System.out.println("Resolution terminee !");
 				ColorMapPath();
@@ -145,8 +145,18 @@ public class MapInterface extends JFrame {
 				ColorMapPath();
 			}
 		});
+		
+		String titreAbout = "A propos de l'application";
+		barMenu.aboutApp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Aide \"A propos\"");
+				message.setText("A propos de l'application");
+				EditLandInterface editer = new EditLandInterface(GetMapInterface(), titreAbout);
+				editer.AddListenerWriteFile();
+			}
+		});
 
-		// ajout du panneau et de la barre de menu Ã  l'interface
+		// ajout du panneau et de la barre de menu à l'interface
 		getContentPane().add(frame, BorderLayout.CENTER);
 		getContentPane().add(barMenu, BorderLayout.NORTH);
 		getContentPane().add(message, BorderLayout.SOUTH);
@@ -155,14 +165,14 @@ public class MapInterface extends JFrame {
 
 	// Methodes ********************************************************************
 	/*
-	 * Renvoie la case Ã  partir des coordonnÃ©es visibles par l'utilisateur
+	 * Renvoie la case à partir des coordonnées visibles par l'utilisateur
 	 */
 	public Land landAt(int x, int y) {
 		return land[x + 2][y + 2];
 	}
 
 	/*
-	 * LibÃ¨re toutes les cases de la carte
+	 * Libère toutes les cases de la carte
 	 */
 	public void setAllLandFree() {
 		for (int i = 0; i < nbRows; i++) {
@@ -172,31 +182,31 @@ public class MapInterface extends JFrame {
 		}
 	}
 	/*
-	 * Liber toutes les cases qui n'appartient pas Ã  la pile donnÃ©e et occupe toutes
+	 * Liber toutes les cases qui n'appartient pas à la pile donnée et occupe toutes
 	 * les autres
 	 */
 	void SetFreeExcept(Stack<Situation> S) {
 		int i;
-		// on libÃ¨re toutes les cases
+		// on libère toutes les cases
 		for (i = 0; i < nbRows; i++) {
 			for (int j = 0; j < nbRows; j++) {
 				landAt(i, j).isFree = true;
 			}
 		}
-		// et on occupe celles qui apparitennent Ã  la pile donnÃ©e
+		// et on occupe celles qui apparitennent à la pile donnée
 		for (i = 0; i < S.table.size(); i++) {
 			S.table.elementAt(i).lastLand.isFree = false;
 		}
 	}
 	/*
-	 * Met le message par dÃ©faut sur le JLabel
+	 * Met le message par défaut sur le JLabel
 	 */
 	public void DefaultMessage() {
 		message.setText("Cliquez sur une case pour la modifier");
 	}
 
 	/*
-	 * Met Ã  jour la couleur de la carte selon la hauteur des cases
+	 * Met à jour la couleur de la carte selon la hauteur des cases
 	 */
 	protected void ColorMapHeight() {
 		barMenu.displayHeightColor.setSelected(true);
@@ -208,7 +218,7 @@ public class MapInterface extends JFrame {
 	}
 
 	/*
-	 * Met Ã  jour la couleur de la carte selon le chemin
+	 * Met à jour la couleur de la carte selon le chemin
 	 */
 	protected void ColorMapPath() {
 		barMenu.displayPathColor.setSelected(true);
@@ -223,7 +233,7 @@ public class MapInterface extends JFrame {
 	}
 
 	/*
-	 * Color la carte d'une couleur donnÃ©e
+	 * Color la carte d'une couleur donnée
 	 */
 	protected void ColorMap(Color x) {
 		for (int i = 0; i < nbRows; i++) {
@@ -234,14 +244,14 @@ public class MapInterface extends JFrame {
 	}
 
 	/*
-	 * RÃ©cuperer le pointeur du la structure MapInterface
+	 * Récuperer le pointeur du la structure MapInterface
 	 */
 	private MapInterface GetMapInterface() {
 		return this;
 	}
 
 	/*
-	 * DÃ©finit les listeners Ã  mettre sur les boutons (objets de type Land)
+	 * Définit les listeners à mettre sur les boutons (objets de type Land)
 	 */
 	public void DefineLandsListener(int CdeListener) {
 		if (CdeListener == EDIT_ACTION) {
@@ -284,98 +294,98 @@ public class MapInterface extends JFrame {
 			if (landAt(posX - 1, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY + 1)))
 				return 2; // en HAUT-DROITE
 			if (landAt(posX, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX, posY + 1)))
-				return 3; // Ã  DROITE
+				return 3; // à DROITE
 			if (landAt(posX + 1, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY + 1)))
-				return 4; // en BAS Ã  DROITE
+				return 4; // en BAS à DROITE
 			if (landAt(posX + 1, posY).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY)))
 				return 5; // en BAS
 			if (landAt(posX + 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY - 1)))
-				return 6; // en BAS Ã  GAUCHE
+				return 6; // en BAS à GAUCHE
 			if (landAt(posX, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX, posY - 1)))
-				return 7; // Ã  GAUCHE
+				return 7; // à GAUCHE
 			if (landAt(posX - 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY - 1)))
-				return 8; // en HAUT Ã  GAUCHE
+				return 8; // en HAUT à GAUCHE
 		}
 		if (lastChoice == 1) {
 			if (landAt(posX - 1, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY + 1)))
 				return 2; // en HAUT-DROITE
 			if (landAt(posX, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX, posY + 1)))
-				return 3; // Ã  DROITE
+				return 3; // à DROITE
 			if (landAt(posX + 1, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY + 1)))
-				return 4; // en BAS Ã  DROITE
+				return 4; // en BAS à DROITE
 			if (landAt(posX + 1, posY).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY)))
 				return 5; // en BAS
 			if (landAt(posX + 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY - 1)))
-				return 6; // en BAS Ã  GAUCHE
+				return 6; // en BAS à GAUCHE
 			if (landAt(posX, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX, posY - 1)))
-				return 7; // Ã  GAUCHE
+				return 7; // à GAUCHE
 			if (landAt(posX - 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY - 1)))
-				return 8; // en HAUT Ã  GAUCHE
+				return 8; // en HAUT à GAUCHE
 		}
 		if (lastChoice == 2) {
 			if (landAt(posX, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX, posY + 1)))
-				return 3; // Ã  DROITE
+				return 3; // à DROITE
 			if (landAt(posX + 1, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY + 1)))
-				return 4; // en BAS Ã  DROITE
+				return 4; // en BAS à DROITE
 			if (landAt(posX + 1, posY).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY)))
 				return 5; // en BAS
 			if (landAt(posX + 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY - 1)))
-				return 6; // en BAS Ã  GAUCHE
+				return 6; // en BAS à GAUCHE
 			if (landAt(posX, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX, posY - 1)))
-				return 7; // Ã  GAUCHE
+				return 7; // à GAUCHE
 			if (landAt(posX - 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY - 1)))
-				return 8; // en HAUT Ã  GAUCHE
+				return 8; // en HAUT à GAUCHE
 		}
 		if (lastChoice == 3) {
 			if (landAt(posX + 1, posY + 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY + 1)))
-				return 4; // en BAS Ã  DROITE
+				return 4; // en BAS à DROITE
 			if (landAt(posX + 1, posY).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY)))
 				return 5; // en BAS
 			if (landAt(posX + 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY - 1)))
-				return 6; // en BAS Ã  GAUCHE
+				return 6; // en BAS à GAUCHE
 			if (landAt(posX, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX, posY - 1)))
-				return 7; // Ã  GAUCHE
+				return 7; // à GAUCHE
 			if (landAt(posX - 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY - 1)))
-				return 8; // en HAUT Ã  GAUCHE
+				return 8; // en HAUT à GAUCHE
 		}
 		if (lastChoice == 4) {
 			if (landAt(posX + 1, posY).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY)))
 				return 5; // en BAS
 			if (landAt(posX + 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY - 1)))
-				return 6; // en BAS Ã  GAUCHE
+				return 6; // en BAS à GAUCHE
 			if (landAt(posX, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX, posY - 1)))
-				return 7; // Ã  GAUCHE
+				return 7; // à GAUCHE
 			if (landAt(posX - 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY - 1)))
-				return 8; // en HAUT Ã  GAUCHE
+				return 8; // en HAUT à GAUCHE
 		}
 		if (lastChoice == 5) {
 			if (landAt(posX + 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX + 1, posY - 1)))
-				return 6; // en BAS Ã  GAUCHE
+				return 6; // en BAS à GAUCHE
 			if (landAt(posX, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX, posY - 1)))
-				return 7; // Ã  GAUCHE
+				return 7; // à GAUCHE
 			if (landAt(posX - 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY - 1)))
-				return 8; // en HAUT Ã  GAUCHE
+				return 8; // en HAUT à GAUCHE
 		}
 		if (lastChoice == 6) {
 			if (landAt(posX, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX, posY - 1)))
-				return 7; // Ã  GAUCHE
+				return 7; // à GAUCHE
 			if (landAt(posX - 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY - 1)))
-				return 8; // en HAUT Ã  GAUCHE
+				return 8; // en HAUT à GAUCHE
 		}
 		if (lastChoice == 7) {
 			if (landAt(posX - 1, posY - 1).isFree && actualLand.IsPassableTo(landAt(posX - 1, posY - 1)))
-				return 8; // en HAUT Ã  GAUCHE
+				return 8; // en HAUT à GAUCHE
 		}
 
 		return -1;
 	}
 	/*
-	 * Trouve un chemin jusqu'Ã  l'arrivÃ©e Ã  partir de la situation donnÃ©e
+	 * Trouve un chemin jusqu'à l'arrivée à partir de la situation donnée
 	 */
 	private Stack<Situation> FindPathFrom(Situation situation) {
 		Situation lastSituation = situation;
 		Land pLand = lastSituation.lastLand;
-		// coordonnÃ©e de pLand
+		// coordonnée de pLand
 		int posX = pLand.getXcoord();
 		int posY = pLand.getYcoord();
 		int lastChoice = lastSituation.lastChoice;
@@ -386,14 +396,14 @@ public class MapInterface extends JFrame {
 			S = new Stack<Situation>();
 		}
 		else {
-			// copie colle bestPath dans S mais s'arrÃªte avant d'arriver Ã  "situation"
+			// copie colle bestPath dans S mais s'arrête avant d'arriver à "situation"
 			S = bestPath.DuplicateStackSituationUntil(situation);
 		}
-		// libÃ¨re toutes les cases sauf celle de la pile S
+		// libère toutes les cases sauf celle de la pile S
 		SetFreeExcept(S);
 		System.out.println("Start Finding path with pLand : " + pLand.getName());
 		while (endLand.isFree) {
-			// cherche le dÃ©placement suivant
+			// cherche le déplacement suivant
 			newChoice = NextPossibleChoice(posX, posY, lastChoice, pLand);
 
 			if (newChoice != -1) {
@@ -408,29 +418,29 @@ public class MapInterface extends JFrame {
 					posX--;
 					posY++;
 				}
-				if (newChoice == 3) {// Ã  DROITE
+				if (newChoice == 3) {// à DROITE
 					posY++;
 				}
-				if (newChoice == 4) {// en BAS Ã  DROITE
+				if (newChoice == 4) {// en BAS à DROITE
 					posX++;
 					posY++;
 				}
 				if (newChoice == 5) {// en BAS
 					posX++;
 				}
-				if (newChoice == 6) {// en BAS Ã  GAUCHE
+				if (newChoice == 6) {// en BAS à GAUCHE
 					posX++;
 					posY--;
 				}
-				if (newChoice == 7) {// Ã  GAUCHE
+				if (newChoice == 7) {// à GAUCHE
 					posY--;
 				}
-				if (newChoice == 8) {// en HAUT Ã  GAUCHE
+				if (newChoice == 8) {// en HAUT à GAUCHE
 					posX--;
 					posY--;
 				}
 				S.nbMove++;
-				// On garde le coÃ»t du chemin
+				// On garde le coût du chemin
 				S.costPath += pLand.CostTo(landAt(posX, posY));
 				// on avance le pointeur
 				pLand = landAt(posX, posY);
@@ -440,7 +450,7 @@ public class MapInterface extends JFrame {
 				System.out.println("pLand : " + pLand.getName());
 
 			}
-			// on dÃ©pile
+			// on dépile
 			else {
 				S.nbMove--;
 				// on recupere le coup precedent
@@ -450,7 +460,7 @@ public class MapInterface extends JFrame {
 				// on libere la case
 				pLand.isFree = true;
 				System.out.println("POP pLand : " + pLand.getName());
-				// on met Ã  jour le coÃ»t du chemin
+				// on met à jour le coût du chemin
 				S.costPath -= lastSituation.lastLand.CostTo(pLand);
 				// on revient sur la case d'avant
 				pLand = lastSituation.lastLand;
@@ -467,7 +477,7 @@ public class MapInterface extends JFrame {
 	}
 
 	/*
-	 * Trouve le chemin de moindre coÃ»t
+	 * Trouve le chemin de moindre coût
 	 */
 	private void LaunchResolution() {
 		bestPath = FindPathFrom(new Situation(0, startLand));

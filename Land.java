@@ -41,7 +41,7 @@ public class Land extends JButton {
 			}
 			System.out.println("Case : " + landSource.getName() + " en cours de modification");
 			landSource.map.message.setText("Case " + landSource.getName() + " en cours de modification");
-			EditInterface editer = new EditInterface(landSource);
+			EditLandInterface editer = new EditLandInterface(landSource);
 		}
 	};
 	final static MouseAdapter startLandListener = new MouseAdapter() {

@@ -5,7 +5,7 @@ import java.io.*;
 import javax.swing.*;
 
 /*
- * Interface de message à l'utilisateur
+ * Interface de message a l'utilisateur
  */
 public final class MessageInterface extends JDialog {
 	// Attributs *******************************************************************
@@ -19,13 +19,13 @@ public final class MessageInterface extends JDialog {
 	// Constructeurs ***************************************************************
 	MessageInterface(String message) {
 		super();
-		// paramètrage de l'interface
+		// parametrage de l'interface
 		setSize(WIGHT_FRAME, HEIGHT_FRAME);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		// paramètrage du message
+		// parametrage du message
 		content = new JLabel(message);
 		content.setHorizontalAlignment(SwingConstants.CENTER);
-		// paramètrage du bouton
+		// parametrage du bouton
 		okButton = new JButton();
 		okButton.setText("OK");
 		okButton.addMouseListener(new MouseAdapter() {
@@ -33,7 +33,7 @@ public final class MessageInterface extends JDialog {
 				dispose();
 			}
 		});
-		// ajout des éléments à l'interface
+		// ajout des elements a� l'interface
 		getContentPane().add(content, BorderLayout.CENTER);
 		getContentPane().add(okButton, BorderLayout.SOUTH);
 		

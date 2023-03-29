@@ -15,6 +15,7 @@ public class BarMenu extends JMenuBar {
 	private JMenu file;
 	private JMenu resolution;
 	private JMenu coloring;
+	private JMenu help;
 
 	public JMenuItem saveFile;
 	public JMenuItem loadFile;
@@ -23,23 +24,26 @@ public class BarMenu extends JMenuBar {
 	public JMenuItem launchResolution;
 	public JCheckBoxMenuItem displayPathColor;
 	public JCheckBoxMenuItem displayHeightColor;
+	public JMenuItem aboutApp;
 
 	// Constructeurs ***************************************************************
 	BarMenu() {
 		super();
-		// cr√©ation des menus
+		// creation des menus
 		file = new JMenu("Fichier");
-		resolution = new JMenu("R√©solution");
+		resolution = new JMenu("RÈsolution");
 		coloring = new JMenu("Coloration");
+		help = new JMenu("Aide");
 
-		// cr√©ation des sous-menus
+		// creation des sous-menus
 		saveFile = new JMenuItem("Enregistrer");
 		loadFile = new JMenuItem("Charger");
-		selectStart = new JMenuItem("S√©lectionner le d√©part");
-		selectEnd = new JMenuItem("S√©lectionner l'arriv√©e");
-		launchResolution = new JMenuItem("Lancer la r√©solution");
+		selectStart = new JMenuItem("SÈlectionner le dÈpart");
+		selectEnd = new JMenuItem("SÈlectionner l'arrivÈe");
+		launchResolution = new JMenuItem("Lancer la rÈsolution");
 		displayPathColor = new JCheckBoxMenuItem("Chemin");
 		displayHeightColor = new JCheckBoxMenuItem("Hauteur");
+		aboutApp = new JMenuItem("A propos");
 		
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(displayPathColor);
@@ -55,11 +59,13 @@ public class BarMenu extends JMenuBar {
 		resolution.add(launchResolution);
 		coloring.add(displayPathColor);
 		coloring.add(displayHeightColor);
+		help.add(aboutApp);
 
 		// on ajoute les menus √† la barre de menus
 		add(file);
 		add(resolution);
 		add(coloring);
+		add(help);
 	}
 
 	// Methodes ********************************************************************
