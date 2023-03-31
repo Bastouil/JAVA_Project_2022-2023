@@ -1,10 +1,13 @@
+/*
+ * INF 1401 : projet JAVA 2022-2023
+ * Trouver le meilleur chemin au sein d'une grille de case avec des nombres.
+ * JAOUANNE Lilian & GARCON Bastian
+ */
+
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
-import java.awt.Color.*;
 import java.util.*;
 
-import java.lang.Math;
 import javax.swing.*;
 
 /*
@@ -34,7 +37,7 @@ public class MapInterface extends JFrame {
 	// message qui s'affiche à l'utilisateur
 	protected JLabel message;
 	// pile des meilleurs choix pour le chemin de moindre coût
-	protected Stack<Situation> bestPath;
+	protected Stack<Situation> stack;
 
 	// Constructeurs ***************************************************************
 	MapInterface(int nbRows, int nbCols) {
@@ -81,6 +84,8 @@ public class MapInterface extends JFrame {
 		// départ et arrivée initialisés en dehors de la carte
 		startLand = landAt(-2, -2);
 		endLand = landAt(-2, -2);
+		// création de la pile
+		stack = new Stack();
 		// instanciation de la barre de menu
 		barMenu = new BarMenu();
 		setJMenuBar(barMenu);
@@ -121,7 +126,7 @@ public class MapInterface extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Choix \"Lancer la resolution\"");
 				if (!startLand.inMap || !endLand.inMap) {
-					System.out.println("Lancement de résolution refusée");
+					System.out.println("Lancement de resolution refusee");
 					MessageInterface m = new MessageInterface(
 							"Veuillez sélectionner un case de départ et d'arrivée avant de lancer la résolution");
 					return;
@@ -129,7 +134,7 @@ public class MapInterface extends JFrame {
 				setAllLandFree();
 				message.setText("Résolution en cours ...");
 				LaunchResolution();
-				MessageInterface m = new MessageInterface("Résolution terminée !");
+				MessageInterface m = new MessageInterface("Résolution terminée. Le coût du meilleur chemin est de : " + stack.bestCostPath);
 				DefaultMessage();
 				System.out.println("Resolution terminee !");
 				ColorMapPath();
@@ -171,23 +176,16 @@ public class MapInterface extends JFrame {
 			}
 		}
 	}
+
 	/*
-	 * Liber toutes les cases qui n'appartient pas à la pile donnée et occupe toutes
-	 * les autres
+	 * Occupe toutes les cases appartenants à la pile donnéeS
 	 */
-	void SetFreeExcept(Stack<Situation> S) {
-		int i;
-		// on libère toutes les cases
-		for (i = 0; i < nbRows; i++) {
-			for (int j = 0; j < nbRows; j++) {
-				landAt(i, j).isFree = true;
-			}
-		}
-		// et on occupe celles qui apparitennent à la pile donnée
-		for (i = 0; i < S.table.size(); i++) {
-			S.table.elementAt(i).lastLand.isFree = false;
+	void SetNotFreeTable(Vector<Situation> V) {
+		for (int i = 0; i < V.size(); i++) {
+			V.elementAt(i).lastLand.isFree = false;
 		}
 	}
+
 	/*
 	 * Met le message par défaut sur le JLabel
 	 */
@@ -272,6 +270,21 @@ public class MapInterface extends JFrame {
 				}
 			}
 		}
+	}
+
+	/*
+	 * Renvoie le coût d'une table donnée
+	 */
+	private int CostOfTable(Vector<Situation> table, Situation nextSituation) {
+		if (table.size() <= 0) {
+			return 0;
+		}
+		int costPath = 0;
+		for (int i = 1; i < table.size(); i++) {
+			costPath += table.elementAt(i - 1).lastLand.CostTo(table.elementAt(i).lastLand);
+		}
+		costPath += table.elementAt(table.size() - 1).lastLand.CostTo(nextSituation.lastLand);
+		return costPath;
 	}
 
 	/*
@@ -369,36 +382,38 @@ public class MapInterface extends JFrame {
 
 		return -1;
 	}
+
 	/*
 	 * Trouve un chemin jusqu'à l'arrivée à partir de la situation donnée
 	 */
-	private Stack<Situation> FindPathFrom(Situation situation) {
+	private void FindPathFrom(Situation situation) {
 		Situation lastSituation = situation;
 		Land pLand = lastSituation.lastLand;
+		System.out.println("Start Finding path with previous situation : " + situation.lastChoice + "\n and pLand : "
+				+ pLand.getName());
 		// coordonnée de pLand
 		int posX = pLand.getXcoord();
 		int posY = pLand.getYcoord();
 		int lastChoice = lastSituation.lastChoice;
 		int newChoice;
 
-		Stack<Situation> S;
-		if (bestPath == null) {
-			S = new Stack<Situation>();
-		}
-		else {
-			// copie colle bestPath dans S mais s'arrête avant d'arriver à "situation"
-			S = bestPath.DuplicateStackSituationUntil(situation);
-		}
+		// on copie la meilleur pile dans l'autre pile
+		stack.DuplicateBestTableIntoTableUntil(situation);
+		System.out.println("Dupication OK");
 		// libère toutes les cases sauf celle de la pile S
-		SetFreeExcept(S);
-		System.out.println("Start Finding path with pLand : " + pLand.getName());
+		setAllLandFree();
+		SetNotFreeTable(stack.table);
+		System.out.println("SetFree OK");
+		stack.costPath = CostOfTable(stack.table, situation);
+		System.out.println("CostOfTable OK");
+		pLand.isFree = false;
 		while (endLand.isFree) {
 			// cherche le déplacement suivant
 			newChoice = NextPossibleChoice(posX, posY, lastChoice, pLand);
 
-			if (newChoice != -1) {
+			if (newChoice != -1 && stack.bestCostPath > stack.costPath) {
 				// on empile le deplacement
-				S.Push(new Situation(newChoice, pLand));
+				stack.Push(new Situation(newChoice, pLand));
 				System.out.println("PUSH pLand : " + pLand.getName());
 				// on va sur la nouvelle case
 				if (newChoice == 1) {// en HAUT
@@ -429,9 +444,8 @@ public class MapInterface extends JFrame {
 					posX--;
 					posY--;
 				}
-				S.nbMove++;
 				// On garde le coût du chemin
-				S.costPath += pLand.CostTo(landAt(posX, posY));
+				stack.costPath += pLand.CostTo(landAt(posX, posY));
 				// on avance le pointeur
 				pLand = landAt(posX, posY);
 				// on marque la carte
@@ -441,17 +455,16 @@ public class MapInterface extends JFrame {
 
 			}
 			// on dépile
-			else {
-				S.nbMove--;
+			else if (!stack.table.isEmpty()){
 				// on recupere le coup precedent
-				lastSituation = S.TopStack();
+				lastSituation = stack.TopStack();
 				// on le supprime de la pile
-				S.Pop();
+				stack.Pop();
 				// on libere la case
 				pLand.isFree = true;
 				System.out.println("POP pLand : " + pLand.getName());
 				// on met à jour le coût du chemin
-				S.costPath -= lastSituation.lastLand.CostTo(pLand);
+				stack.costPath -= lastSituation.lastLand.CostTo(pLand);
 				// on revient sur la case d'avant
 				pLand = lastSituation.lastLand;
 				posX = pLand.getXcoord();
@@ -460,36 +473,54 @@ public class MapInterface extends JFrame {
 				lastChoice = lastSituation.lastChoice;
 				System.out.println("pLand : " + pLand.getName());
 			}
+			else{
+				stack.costPath = Integer.MAX_VALUE;
+				return;
+			}
 		}
-		System.out.println("---------- Path Find cost : " + S.costPath);
-		// on sauvgarde le meilleur chemin
-		return S;
+		System.out.println("---------- Path Find cost : " + stack.costPath);
+		System.out.println("---------- Actual best cost : " + stack.bestCostPath);
 	}
 
 	/*
 	 * Trouve le chemin de moindre coût
 	 */
 	private void LaunchResolution() {
-		bestPath = FindPathFrom(new Situation(0, startLand));
-		Situation actualSituation = bestPath.TopStack();
-		Stack<Situation> S;
+		stack.Clear();
+		Situation actualSituation = new Situation(0, startLand);
 		do {
-			
-			S = FindPathFrom(actualSituation);
-			
-			if(bestPath.costPath > S.costPath) {
-				bestPath = S;
-				actualSituation = bestPath.TopStack();
+
+			FindPathFrom(actualSituation);
+			// TODO : si il n'a pas trouvé de chemin
+			if (stack.bestCostPath > stack.costPath) {
+				stack.DuplicateTableIntoBestTable();
+				stack.bestCostPath = stack.costPath;
+				actualSituation = stack.TopStackBestTable();
+				System.out.println("Best cost update = " + stack.bestCostPath);
+			} else {
+				if (actualSituation.lastChoice < 8)
+					actualSituation.lastChoice++;
+				else
+					actualSituation = stack.ElementBefore(stack.bestTable, actualSituation);
 			}
-			else {
-				actualSituation = bestPath.SituationBefore(actualSituation);
-			}
-			
-		}while(actualSituation != null);
-		
-		SetFreeExcept(bestPath);
+
+		} while (actualSituation != null && stack.bestCostPath != 0);
+		setAllLandFree();
+		SetNotFreeTable(stack.bestTable);
 		endLand.isFree = false;
-		
-		System.out.println("Best cost = " + bestPath.costPath);
+		PrintTable(stack.bestTable);
+		System.out.println("Final best cost = " + stack.bestCostPath);
+	}
+
+	/*
+	 * Affiche le contenu d'une pile
+	 */
+	private void PrintTable(Vector<Situation> table) {
+		System.out.println("Pile : ******************");
+		for (int i = 0; i < table.size(); i++) {
+			table.elementAt(i).lastLand.isFree = false;
+			System.out.println(table.elementAt(i).lastChoice + "	" + table.elementAt(i).lastLand.getName());
+		}
+		System.out.println("*************************");
 	}
 }
