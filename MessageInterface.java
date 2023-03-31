@@ -1,3 +1,9 @@
+/*
+ * INF 1401 : projet JAVA 2022-2023
+ * Trouver le meilleur chemin au sein d'une grille de case avec des nombres.
+ * JAOUANNE Lilian & GARCON Bastian
+ */
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -11,7 +17,7 @@ public final class MessageInterface extends JDialog {
 	// Attributs *******************************************************************
 	// dimensions de la fenêtre de dialogue
 	private final static int WIGHT_FRAME = 500;
-	private final static int HEIGHT_FRAME = 100;
+	private final static int HEIGHT_FRAME = 200;
 	private JLabel content;
 	// bouton de confirmation
 	private JButton okButton;
@@ -19,6 +25,7 @@ public final class MessageInterface extends JDialog {
 	// Constructeurs ***************************************************************
 	MessageInterface(String message) {
 		super();
+		setTitle("Pressez le bouton \"OK\" pour sortir");
 		// paramètrage de l'interface
 		setSize(WIGHT_FRAME, HEIGHT_FRAME);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
