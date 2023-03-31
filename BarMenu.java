@@ -1,10 +1,12 @@
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.awt.Color.*;
-import java.util.*;
+/*
+ * INF 1401 : projet JAVA 2022-2023
+ * Trouver le meilleur chemin au sein d'une grille de case avec des nombres.
+ * JAOUANNE Lilian & GARCON Bastian
+ */
 
-import java.lang.Math;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 
 /*
@@ -15,6 +17,7 @@ public class BarMenu extends JMenuBar {
 	private JMenu file;
 	private JMenu resolution;
 	private JMenu coloring;
+	private JMenu help;
 
 	public JMenuItem saveFile;
 	public JMenuItem loadFile;
@@ -23,6 +26,7 @@ public class BarMenu extends JMenuBar {
 	public JMenuItem launchResolution;
 	public JCheckBoxMenuItem displayPathColor;
 	public JCheckBoxMenuItem displayHeightColor;
+	public JMenuItem aboutHelp;
 
 	// Constructeurs ***************************************************************
 	BarMenu() {
@@ -31,6 +35,7 @@ public class BarMenu extends JMenuBar {
 		file = new JMenu("Fichier");
 		resolution = new JMenu("Résolution");
 		coloring = new JMenu("Coloration");
+		help = new JMenu("Aide");
 
 		// création des sous-menus
 		saveFile = new JMenuItem("Enregistrer");
@@ -40,7 +45,8 @@ public class BarMenu extends JMenuBar {
 		launchResolution = new JMenuItem("Lancer la résolution");
 		displayPathColor = new JCheckBoxMenuItem("Chemin");
 		displayHeightColor = new JCheckBoxMenuItem("Hauteur");
-		
+		aboutHelp = new JMenuItem("A propos");
+
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(displayPathColor);
 		bg.add(displayHeightColor);
@@ -55,11 +61,21 @@ public class BarMenu extends JMenuBar {
 		resolution.add(launchResolution);
 		coloring.add(displayPathColor);
 		coloring.add(displayHeightColor);
+		help.add(aboutHelp);
+		
+		aboutHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Choix \"A propos\"");
+				MessageInterface m = new MessageInterface(
+						"<html>Version: (0.0.1)<br><br>Date: 2023<br>(c) Copyright App contributors and others.<br>All rights reserved.<br><br>By Garçon Bastian & Jaouanne Lilian</html>");
+			}
+		});
 
 		// on ajoute les menus à la barre de menus
 		add(file);
 		add(resolution);
 		add(coloring);
+		add(help);
 	}
 
 	// Methodes ********************************************************************
