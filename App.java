@@ -1,4 +1,10 @@
 /*
+ * INF 1401 : projet JAVA 2022-2023
+ * Trouver le meilleur chemin au sein d'une grille de case avec des nombres.
+ * JAOUANNE Lilian & GARCON Bastian
+ */
+
+/*
  * Classe principale (execution du programme)
  */
 public class App
