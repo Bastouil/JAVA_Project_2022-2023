@@ -63,6 +63,7 @@ public class BarMenu extends JMenuBar {
 		coloring.add(displayHeightColor);
 		help.add(aboutHelp);
 		
+		// ajout du listener sur l'onglet à propos
 		aboutHelp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Choix \"A propos\"");
@@ -77,6 +78,4 @@ public class BarMenu extends JMenuBar {
 		add(coloring);
 		add(help);
 	}
-
-	// Methodes ********************************************************************
 }
