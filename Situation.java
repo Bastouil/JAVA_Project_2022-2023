@@ -8,17 +8,12 @@
  * Situation qui sera stockée dans la pile
  */
 public class Situation{
+	// Attributs *******************************************************************
 	int lastChoice;
 	Land lastLand;
-	
+	// Constructeurs ***************************************************************
 	Situation(int choice, Land land){
 		lastChoice = choice;
 		lastLand = land;
-	}
-	/*
-	 * Renvoie une copie de la situation
-	 */
-	Situation DuplicateSituation() {
-		return new Situation(lastChoice, lastLand);
 	}
 }
