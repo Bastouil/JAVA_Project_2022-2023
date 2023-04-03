@@ -11,12 +11,18 @@ import java.util.Vector;
  * contient aussi le coût des deux piles.
  */
 public class Stack<T extends Situation> {
+	// Attributs *******************************************************************
+	// coût du chemin courant
 	int costPath;
+	// pile du chemin courant
 	Vector<T> table;
 
+	// coût de la meilleur pile
 	int bestCostPath;
+	// pile du meilleur chemin
 	Vector<T> bestTable;
 
+	// Constructeurs ***************************************************************
 	Stack() {
 		costPath = 0;
 		table = new Vector<T>();
@@ -25,26 +31,52 @@ public class Stack<T extends Situation> {
 		bestTable = new Vector<T>();
 	}
 
+	// Methodes ********************************************************************
+	/*
+	 * Met l'élément T dans la pile du chemin courant
+	 */
 	void Push(T x) {
 		table.add(table.size(), x);
 	}
+
+	/*
+	 * Met l'élément T dans la pile du meilleur chemin
+	 */
 	void PushBestTable(T x) {
 		bestTable.add(bestTable.size(), x);
 	}
 
+	/*
+	 * Renvoie l'élément au sommet de la pile du chemin courant
+	 */
 	T TopStack() {
 		return table.elementAt(table.size() - 1);
 	}
+
+	/*
+	 * Renvoie l'élément au sommet de la pile du meilleur chemin
+	 */
 	T TopStackBestTable() {
 		return bestTable.elementAt(bestTable.size() - 1);
 	}
 
+	/*
+	 * Supprime l'élément au sommet de la pile du chemin courant
+	 */
 	void Pop() {
 		table.remove(table.size() - 1);
 	}
+
+	/*
+	 * Supprime l'élément au sommet de la pile du meilleur chemin
+	 */
 	void PopBestTable() {
 		bestTable.remove(bestTable.size() - 1);
 	}
+
+	/*
+	 * Supprime l'entièreté de la pile du chemin courant
+	 */
 	void ClearTable() {
 		int i = table.size();
 		while (i > 0) {
@@ -52,6 +84,10 @@ public class Stack<T extends Situation> {
 			i--;
 		}
 	}
+
+	/*
+	 * Supprime l'entièreté de la pile du meilleur chemin
+	 */
 	void ClearBestTable() {
 		int i = bestTable.size();
 		while (i > 0) {
@@ -59,12 +95,17 @@ public class Stack<T extends Situation> {
 			i--;
 		}
 	}
+
+	/*
+	 * Supprime l'entièreté des deux piles et met leur coût par défaut
+	 */
 	void Clear() {
 		ClearTable();
 		ClearBestTable();
 		costPath = 0;
 		bestCostPath = Integer.MAX_VALUE;
 	}
+
 	/*
 	 * Renvoie une copie de la pile jusqu'à avant la situation donnée en partant du
 	 * bas de la pile. Attention, le coût n'est pas mis à jour.
@@ -84,6 +125,7 @@ public class Stack<T extends Situation> {
 			actualElement = bestTable.elementAt(i);
 		}
 	}
+
 	/*
 	 * Renvoie une copie de la pile en partant du bas de la pile. Attention, le coût
 	 * n'est pas mis à jour.
@@ -106,7 +148,7 @@ public class Stack<T extends Situation> {
 	T DuplicateElement(T x) {
 		int choice = x.lastChoice;
 		Land land = x.lastLand;
-		
+
 		return (T) new Situation(choice, land);
 	}
 
