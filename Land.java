@@ -16,10 +16,10 @@ public class Land extends JButton {
 	// Attributs *******************************************************************
 	public static final int OUT = -1;
 	// attribus servants la coloration des boutons
-	static final float maxHeight = 30;
-	static final float interSize = maxHeight / 7;
+	private static final float maxHeight = 30;
+	private static final float interSize = maxHeight / 7;
 	// comosante de la couleur du fond de la case
-	int R, G, B;
+	private int R, G, B;
 	// boolean permettant de savoir la nature de la case (départ ou arrivée)
 	boolean isStart;
 	boolean isEnd;
